@@ -1,6 +1,9 @@
 export const initialStore=()=>{
   return{
     message: null,
+    contacts: [],
+    agendas: null,
+    error: null,
     todos: [
       {
         id: 1,
@@ -18,6 +21,35 @@ export const initialStore=()=>{
 
 export default function storeReducer(store, action = {}) {
   switch(action.type){
+    case 'load_data':
+      fetch('https://playground.4geeks.com/contact/agendas', {
+        method: 'POST',
+        'Content-Type': 'application/json',
+        body: JSON.stringify(action.payload)
+      })
+      .then(resp=>resp.json())
+      .then(data=> {
+        return {...store, agendas: data}
+      })
+      .catch(err=> {
+        return {...store, error: err}})  
+
+    case 'delete_contact':
+      return {
+        ...store,
+        contacts: store.contacts.filter(el=> el.phone !== action.payload.phone)
+      }
+    case 'add_contact': 
+    return {
+      ...store,
+      contacts: [...store.contacts, action.payload]
+    }
+    case 'changeMessage': 
+     console.log('PerformancePaintTiming')
+
+     return {
+      ...store, message: action.payload
+     }
     case 'add_task':
 
       const { id,  color } = action.payload
